@@ -1,4 +1,7 @@
 
+using BankBlazor.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace BankBlazor.Api
 {
     public class Program
@@ -14,6 +17,11 @@ namespace BankBlazor.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Registrerar BankBlazorContext i Program.cs, och talar om för applikationen att när någon
+            //behöver en instans av BankBlazorContext (t.ex. en controller), ska den få en instans av
+            //den som är korrekt konfigurerad med SQL Server-anslutning och connection string.
+            builder.Services.AddDbContext<BankBlazorContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
