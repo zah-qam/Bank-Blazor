@@ -17,7 +17,7 @@ namespace BankBlazor.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //Registrerar BankBlazorContext i Program.cs, och talar om för applikationen att när någon
+            //---> Registrerar BankBlazorContext i Program.cs, och talar om för applikationen att när någon
             //behöver en instans av BankBlazorContext (t.ex. en controller), ska den få en instans av
             //den som är korrekt konfigurerad med SQL Server-anslutning och connection string.
             builder.Services.AddDbContext<BankBlazorContext>(options =>
