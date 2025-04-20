@@ -13,8 +13,8 @@ namespace BankBlazor.Api.Controllers
             _customerService = customerService;
         }
         // GET: api/CustomerController
-        [HttpGet] // Detta är en GET metod som hämtar alla kunder genom att anropa GetAllAsync metoden i ICustomerService
-        public async Task<ActionResult<List<CustomerDto>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)
+        [HttpGet] // Detta är en GET metod som hämtar alla kunder genom att anropa GetAll metoden i ICustomerService
+        public async Task<ActionResult<List<CustomerDTO>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)
                                                                     // Metoden returnerar en lista av CustomerDto i Json format.
         {
             var customers = await _customerService.GetAllAsync();
@@ -22,7 +22,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDto>> GetById(int id) // Detta är en GET metod som hämtar en kund 
+        public async Task<ActionResult<CustomerDTO>> GetById(int id) // Detta är en GET metod som hämtar en kund 
                                                                      // Den tar emot en parameter id av typ int 
                                                                      // och hämtar en specifik kund.
         {
