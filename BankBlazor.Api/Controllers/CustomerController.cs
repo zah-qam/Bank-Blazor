@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BankBlazor.Api.DTOs;
+using BankBlazor.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankBlazor.Api.Controllers
@@ -14,19 +16,19 @@ namespace BankBlazor.Api.Controllers
         }
         // GET: api/CustomerController
         [HttpGet] // Detta är en GET metod som hämtar alla kunder genom att anropa GetAll metoden i ICustomerService
-        public async Task<ActionResult<List<CustomerDTO>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)
+        public async Task<ActionResult<List<CustomerReadDTO>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)
                                                                     // Metoden returnerar en lista av CustomerDto i Json format.
         {
-            var customers = await _customerService.GetAllAsync();
+            var customers = await _customerService.GetAllCustomers();
             return Ok(customers);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDTO>> GetById(int id) // Detta är en GET metod som hämtar en kund 
+        public async Task<ActionResult<CustomerReadDTO>> GetById(int id) // Detta är en GET metod som hämtar en kund 
                                                                      // Den tar emot en parameter id av typ int 
                                                                      // och hämtar en specifik kund.
         {
-            var customer = await _customerService.GetByIdAsync(id);
+            var customer = await _customerService.GetCustomerById(id);
             if (customer == null)
             {
                 return NotFound();
