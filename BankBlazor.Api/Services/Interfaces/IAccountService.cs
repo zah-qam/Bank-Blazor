@@ -1,4 +1,5 @@
 ﻿using BankBlazor.Api.Data;
+using BankBlazor.Api.DTOs;
 
 namespace BankBlazor.Api.Services.Interfaces
 {
