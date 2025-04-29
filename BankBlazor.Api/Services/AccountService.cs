@@ -33,35 +33,28 @@ namespace BankBlazor.Api.Services
             var account = await _dbContext.Accounts.FindAsync(accountId);
             return account?.Balance;
         }
-        public async Task<Account> Transfer(int fromAccountId, int toAccountId, decimal amount) // Vi letar fram kontot från databasen, om vi hittar det,
+        public async Task<ResponseCode> Transfer(int fromAccountId, int toAccountId, decimal amount) // Vi letar fram kontot från databasen, om vi hittar det,
                                                                                                 // kollar vi om det har tillräckligt med saldo för att göra överföringen
         {
-            using var transaction = await _dbContext.Database.BeginTransactionAsync(); 
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
             {
                 var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId); // Letar fram kontot som ska överföra pengar
                 var toAccount = await _dbContext.Accounts.FindAsync(toAccountId); // kontot som ska ta emot pengarna
-                if (fromAccount == null || toAccount == null)
-                {
-                    return ResponseCode.NotFound; 
-                }
-                if (fromAccount.Balance < amount) // Kollar om det finns tillräckligt med saldo
-                {
-                    return ResponseCode.BadRequest;
-                }
-                fromAccount.Balance -= amount;
-                toAccount.Balance += amount;
-                await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync(); // Ångrar allt om något fel händer.
-                return fromAccount; 
+               
+                    fromAccount.Balance -= amount;
+                    toAccount.Balance += amount;
+                    await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync(); // Ångrar allt om något fel händer.
+                    return ResponseCode.Accepted; // Returnerar true om vi lyckas
             }
             catch
             {
-                await transaction.RollbackAsync(); 
+                await transaction.RollbackAsync();
                 throw;
             }
         }
-        public async Task<bool> Deposit(int accountId, decimal amount) // Vi letar fram kontot från databasen, om vi hittar det,
+        public async Task<ResponseCode> Deposit(int accountId, decimal amount) // Vi letar fram kontot från databasen, om vi hittar det,
                                                                        // lägger vi till beloppet på kontot och sparar ändringen i databasen
         {
             var account = await _dbContext.Accounts.FindAsync(accountId); // Letar oss att hämta kontot från databasen
@@ -73,7 +66,7 @@ namespace BankBlazor.Api.Services
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted; // Returnerar true om vi lyckas
         }
-        public async Task<bool> Withdraw(int accountId, decimal amount)
+        public async Task<ResponseCode> Withdraw(int accountId, decimal amount)
         {
             var account = await _dbContext.Accounts.FindAsync(accountId);
             if (account == null)
