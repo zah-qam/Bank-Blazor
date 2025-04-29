@@ -6,17 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankBlazor.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[customercontroler]")]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerService _customerService; // Ska skapa en Mapp (Interfaces) Och sätta in ICustomerService där
+        private readonly ICustomerService _customerService; // Ska skapa en Mapp (Interfaces) Och sätta in ICustomerService där   /klart
         public CustomerController(ICustomerService customerService) // Jag skapar en konstruktor som tar emot ICustomerService
         {
             _customerService = customerService;
         }
         // GET: api/CustomerController
         [HttpGet] // Detta är en GET metod som hämtar alla kunder genom att anropa GetAll metoden i ICustomerService
-        public async Task<ActionResult<List<CustomerReadDTO>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)
+        public async Task<ActionResult<List<CustomerReadDTO>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)         /klart
                                                                     // Metoden returnerar en lista av CustomerDto i Json format.
         {
             var customers = await _customerService.GetAllCustomers();
