@@ -43,15 +43,15 @@ namespace BankBlazor.Api.Services
                 var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId); // Letar fram kontot som ska överföra pengar
                 var toAccount = await _dbContext.Accounts.FindAsync(toAccountId); // kontot som ska ta emot pengarna
                 if (fromAccount == null || toAccount == null)
-                {
                     return ResponseCode.NotFound; // Om något av kontona inte finns, returnera NotFound
-                }
+                
                 if (fromAccount.Balance < amount) // Kollar om det finns tillräckligt med saldo
-                {
+                
                     return ResponseCode.InsufficientFunds; // Om det inte finns tillräckligt med saldo, returnera InsufficientFunds
-                }
-                fromAccount.Balance -= amount;
+                
+                    fromAccount.Balance -= amount;
                     toAccount.Balance += amount;
+
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync(); // Ångrar allt om något fel händer.
                     return ResponseCode.Accepted; // Returnerar true om vi lyckas
@@ -66,10 +66,8 @@ namespace BankBlazor.Api.Services
                                                                        // lägger vi till beloppet på kontot och sparar ändringen i databasen
         {
             var account = await _dbContext.Accounts.FindAsync(accountId); // Letar oss att hämta kontot från databasen
-            if (account == null)
-            {
-                return ResponseCode.NotFound;
-            }
+            if (account == null) return ResponseCode.NotFound;
+            
             account.Balance += amount;
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted; // Returnerar true om vi lyckas
