@@ -75,14 +75,9 @@ namespace BankBlazor.Api.Services
         public async Task<ResponseCode> Withdraw(int accountId, decimal amount)
         {
             var account = await _dbContext.Accounts.FindAsync(accountId);
-            if (account == null)
-            {
-                return ResponseCode.NotFound;
-            }
-            if (account.Balance < amount)
-            {
-                return ResponseCode.InsufficientFunds;
-            }
+            if (account == null) return ResponseCode.NotFound;
+            if (account.Balance < amount) return ResponseCode.InsufficientFunds;
+            
             account.Balance -= amount;
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted;
