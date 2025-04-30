@@ -39,10 +39,18 @@ namespace BankBlazor.Api.Services
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
             {
+                
                 var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId); // Letar fram kontot som ska överföra pengar
                 var toAccount = await _dbContext.Accounts.FindAsync(toAccountId); // kontot som ska ta emot pengarna
-               
-                    fromAccount.Balance -= amount;
+                if (fromAccount == null || toAccount == null)
+                {
+                    return ResponseCode.NotFound; // Om något av kontona inte finns, returnera NotFound
+                }
+                if (fromAccount.Balance < amount) // Kollar om det finns tillräckligt med saldo
+                {
+                    return ResponseCode.InsufficientFunds; // Om det inte finns tillräckligt med saldo, returnera InsufficientFunds
+                }
+                fromAccount.Balance -= amount;
                     toAccount.Balance += amount;
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync(); // Ångrar allt om något fel händer.
