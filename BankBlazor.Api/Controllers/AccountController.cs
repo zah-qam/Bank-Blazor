@@ -43,7 +43,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         [HttpPost("withdraw")]
-        public async Task<ActionResult> Withdraw([FromBody] TransactionDTO dto) // Ska skapa TransactionDTO i (DTOs)
+        public async Task<ActionResult> Withdraw([FromBody] TransactionDTO dto) 
         {
             var result = await _accountService.Withdraw(dto.AccountId, dto.Amount);
             return result == ResponseCode.Success ? Ok("Transaktionen gick genom.") :
