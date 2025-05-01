@@ -69,6 +69,20 @@ namespace BankBlazor.Api.Services
             if (account == null) return ResponseCode.NotFound;
             
             account.Balance += amount;
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Type = "Deposit",
+                Operation = "Insättning",
+                Amount = amount,
+                Balance = account.Balance,
+                Bank = "BankBlazor",
+                
+            };
+            _dbContext.Transactions.Add(transaction); // Lägger till transaktionen i databasen
+
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted; // Returnerar true om vi lyckas
         }
