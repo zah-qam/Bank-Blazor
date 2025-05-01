@@ -1,6 +1,6 @@
 ﻿namespace BankBlazor.Api.DTOs
 {
-    public class TransactioCreatDTO
+    public class TransactionCreateDTO
     {
         public int AccountId { get; set; }
         public decimal Amount { get; set; }
