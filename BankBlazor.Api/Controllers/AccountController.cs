@@ -38,7 +38,7 @@ namespace BankBlazor.Api.Controllers
         {
             var result = await _accountService.Transfer(dto.FromAccountId, dto.ToAccountId, dto.Amount);
             return result == ResponseCode.Success ? Ok("Överföringen gick genom utmärkt.") :
-                   result == ResponseCode.NotFound ? NotFound("Någon av konton hittades inte.") :
+                   result == ResponseCode.NotFound ? NotFound("Någon/ingen av konton hittades inte.") :
                    BadRequest("Ej tillräckligt med saldo.");
         }
 
@@ -55,9 +55,9 @@ namespace BankBlazor.Api.Controllers
         public async Task<ActionResult> Deposit([FromBody] TransactionDTO dto) 
         {
             var result = await _accountService.Deposit(dto.AccountId, dto.Amount);
-            return result == ResponseCode.Success ? Ok() :
-                   result == ResponseCode.NotFound ? NotFound() :
-                   BadRequest();
+            return result == ResponseCode.Success ? Ok("Överföringen gick genom utmärkt.") :
+                   result == ResponseCode.NotFound ? NotFound("Någon/ ingen av kontona hittades inte.") :
+                   BadRequest("Oväntat fel inträffade.");
         }
 
     }
