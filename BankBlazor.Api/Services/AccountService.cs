@@ -93,6 +93,20 @@ namespace BankBlazor.Api.Services
             if (account.Balance < amount) return ResponseCode.InsufficientFunds;
             
             account.Balance -= amount;
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Type = "Withdraw",
+                Operation = "Uttag",
+                Amount = amount,
+                Balance = account.Balance,
+                Bank = "BankBlazor",
+
+            };
+            _dbContext.Transactions.Add(transaction); // Lägger till transaktionen i databasen
+
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted;
         }
