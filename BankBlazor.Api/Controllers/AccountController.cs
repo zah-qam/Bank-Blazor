@@ -43,7 +43,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         [HttpPost("withdraw")]
-        public async Task<ActionResult> Withdraw([FromBody] TransactionDTO dto) 
+        public async Task<ActionResult> Withdraw([FromBody] TransactionCreateDTO dto) 
         {
             var result = await _accountService.Withdraw(dto.AccountId, dto.Amount);
             return result == ResponseCode.Success ? Ok("Transaktionen gick genom.") :
@@ -52,7 +52,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         [HttpPost("deposit")]
-        public async Task<ActionResult> Deposit([FromBody] TransactionDTO dto) 
+        public async Task<ActionResult> Deposit([FromBody] TransactionCreateDTO dto) 
         {
             var result = await _accountService.Deposit(dto.AccountId, dto.Amount);
             return result == ResponseCode.Success ? Ok("Överföringen gick genom utmärkt.") :
