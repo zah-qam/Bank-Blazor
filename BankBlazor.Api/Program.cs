@@ -28,6 +28,17 @@ namespace BankBlazor.Api
             builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
 
+            // Ger tilllåtelse till andra domäner att anropa vår API
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowBlazorClient", policy =>
+                {
+                    policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -38,6 +49,8 @@ namespace BankBlazor.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowBlazorClient");
 
             app.UseAuthorization();
 
