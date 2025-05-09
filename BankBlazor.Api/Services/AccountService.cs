@@ -10,9 +10,11 @@ namespace BankBlazor.Api.Services
     public class AccountService : IAccountService
     {
         private readonly BankBlazorContext _dbContext;
-        public AccountService(BankBlazorContext context)
+        private readonly ITransactionService _transactionService; // Vi kommer att använda oss av TransactionService för att skapa transaktioner
+        public AccountService(BankBlazorContext context, ITransactionService transactionService) // Vi injicerar TransactionService i AccountService
         {
             _dbContext = context;
+            _transactionService = transactionService;
         }
         public async Task<List<AccountReadDTO>> GetAccountByCustomerId(int customerId)
         {
@@ -51,14 +53,33 @@ namespace BankBlazor.Api.Services
                 
                     fromAccount.Balance -= amount;
                     toAccount.Balance += amount;
+                await _dbContext.SaveChangesAsync();
 
-                    await _dbContext.SaveChangesAsync();
-                    await transaction.CommitAsync(); // Ångrar allt om något fel händer.
-                    return ResponseCode.Accepted; // Returnerar true om vi lyckas
+                await _transactionService.CreateAsync(new TransactionCreateDTO
+                {
+                    AccountId = fromAccountId,
+                    Amount = amount,
+                    Type = "Withdraw",
+                    Operation = "Transfer to account " + toAccountId,
+                    Bank = "BankBlazor"
+                });
+
+                await _transactionService.CreateAsync(new TransactionCreateDTO
+                {
+                    AccountId = toAccountId,
+                    Amount = amount,
+                    Type = "Deposit",
+                    Operation = "Transfer from account " + fromAccountId,
+                    Bank = "BankBlazor"
+                });
+
+                
+                    await transaction.CommitAsync(); 
+                    return ResponseCode.Success; // Returnerar true om vi lyckas
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync();// Ångrar allt om något fel händer.
                 throw;
             }
         }
@@ -69,6 +90,20 @@ namespace BankBlazor.Api.Services
             if (account == null) return ResponseCode.NotFound;
             
             account.Balance += amount;
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Type = "Deposit",
+                Operation = "Insättning",
+                Amount = amount,
+                Balance = account.Balance,
+                Bank = "BankBlazor",
+                
+            };
+            _dbContext.Transactions.Add(transaction); // Lägger till transaktionen i databasen
+
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted; // Returnerar true om vi lyckas
         }
@@ -79,6 +114,20 @@ namespace BankBlazor.Api.Services
             if (account.Balance < amount) return ResponseCode.InsufficientFunds;
             
             account.Balance -= amount;
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Type = "Withdraw",
+                Operation = "Uttag",
+                Amount = amount,
+                Balance = account.Balance,
+                Bank = "BankBlazor",
+
+            };
+            _dbContext.Transactions.Add(transaction); // Lägger till transaktionen i databasen
+
             await _dbContext.SaveChangesAsync();
             return ResponseCode.Accepted;
         }

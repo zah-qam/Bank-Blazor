@@ -15,7 +15,7 @@ namespace BankBlazor.Api.Controllers
             _accountService = accountService;
         }
 
-        // GET: api/AccountController
+        // GET: api/AccountController/customer/5
         [HttpGet("customer/{customerId}")] // Detta är en GET metod som hämtar alla konton för en specifik kund
         public async Task<ActionResult<List<AccountReadDTO>>> GetAccountsByCustomerId(int customerId)
         {
@@ -23,6 +23,7 @@ namespace BankBlazor.Api.Controllers
             return Ok(accounts);
         }
 
+        // GET: api/AccountController/balance/5
         [HttpGet("balance/{accountId}")]
         public async Task<ActionResult<decimal>> GetBalance(int accountId)
         {
@@ -33,6 +34,7 @@ namespace BankBlazor.Api.Controllers
             return Ok(balance);
         }
 
+        // POST: api/AccountController/transfer
         [HttpPost("transfer")]
         public async Task<ActionResult> Transfer([FromBody] TransferDTO dto) 
         {
@@ -42,6 +44,7 @@ namespace BankBlazor.Api.Controllers
                    BadRequest("Ej tillräckligt med saldo.");
         }
 
+        // POST: api/AccountController/withdraw
         [HttpPost("withdraw")]
         public async Task<ActionResult> Withdraw([FromBody] TransactionCreateDTO dto) 
         {
@@ -51,6 +54,7 @@ namespace BankBlazor.Api.Controllers
                    BadRequest("Ej tillräckligt med saldo!");
         }
 
+        // Post: api/AccountController/deposit
         [HttpPost("deposit")]
         public async Task<ActionResult> Deposit([FromBody] TransactionCreateDTO dto) 
         {

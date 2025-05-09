@@ -1,4 +1,6 @@
 using BankBlazor.Api.Data;
+using BankBlazor.Api.Services.Interfaces;
+using BankBlazor.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankBlazor.Api
@@ -21,6 +23,22 @@ namespace BankBlazor.Api
             //den som är korrekt konfigurerad med SQL Server-anslutning och connection string.
             builder.Services.AddDbContext<BankBlazorContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+            // Ger tilllåtelse till andra domäner att anropa vår API
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowBlazorClient", policy =>
+                {
+                    policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,6 +49,8 @@ namespace BankBlazor.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowBlazorClient");
 
             app.UseAuthorization();
 
