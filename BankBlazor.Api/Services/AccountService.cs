@@ -9,7 +9,7 @@ namespace BankBlazor.Api.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly BankBlazorContext _dbContext;
+        private readonly BankBlazorContext _dbContext; // Vi kommer att använda oss av BankBlazorContext för att hämta och spara data i databasen
         private readonly ITransactionService _transactionService; // Vi kommer att använda oss av TransactionService för att skapa transaktioner
         public AccountService(BankBlazorContext context, ITransactionService transactionService) // Vi injicerar TransactionService i AccountService
         {
