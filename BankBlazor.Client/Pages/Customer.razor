@@ -1,5 +1,48 @@
-﻿<h3>Kundöversikt</h3>
+﻿@page "/customer"
+@using BankBlazor.Client.ViewModel
+@using Newtonsoft.Json
+@inject HttpClient HttpClient
+
+@if (CustomerViewModel == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <section id="dashboard" class="container">
+		<h2>Custumer Dashboard</h2>
+		<div class="info">
+            <p><strong>Namn:</strong> @CustomerViewModel.GivenName @CustomerViewModel.SurName</p>
+			<p><strong>Address:</strong> @CustomerViewModel.Streetaddress</p>
+			<p><strong>Telefonnummer:</strong> @CustomerViewModel.Zipcode</p>
+			<p><strong>Postnummer:</strong> @CustomerViewModel.City</p>
+			<p><strong>E-post:</strong> @CustomerViewModel.Emailaddress</p>
+		</div>
+        </section>
+}
+    
 
 @code {
+    public CustomerViewModel? CustomerViewModel { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var id = 1;
+        var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7249/api/Customer/{id}");
+        try
+        {
+            using (var response = await HttpClient.SendAsync(request))
+            {
+                response.EnsureSuccessStatusCode();
+                var body = await response.Content.ReadAsStringAsync();
+                // Deserialize the JSON response into the ProductViewModel object
+                CustomerViewModel = JsonConvert.DeserializeObject<CustomerViewModel>(body);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.Message.ToString();
+        }
+    }
 }
