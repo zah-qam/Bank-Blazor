@@ -10,17 +10,17 @@
 else
 {
     <section id="dashboard" class="container">
-		<h2>Custumer Dashboard</h2>
-		<div class="info">
+        <h2>Custumer Dashboard</h2>
+        <div class="info">
             <p><strong>Namn:</strong> @CustomerViewModel.GivenName @CustomerViewModel.SurName</p>
-			<p><strong>Address:</strong> @CustomerViewModel.Streetaddress</p>
-			<p><strong>Telefonnummer:</strong> @CustomerViewModel.Zipcode</p>
-			<p><strong>Postnummer:</strong> @CustomerViewModel.City</p>
-			<p><strong>E-post:</strong> @CustomerViewModel.Emailaddress</p>
-		</div>
-        </section>
+            <p><strong>Address:</strong> @CustomerViewModel.Streetaddress</p>
+            <p><strong>Telefonnummer:</strong> @CustomerViewModel.Zipcode</p>
+            <p><strong>Postnummer:</strong> @CustomerViewModel.City</p>
+            <p><strong>E-post:</strong> @CustomerViewModel.Emailaddress</p>
+        </div>
+    </section>
 }
-    
+
 
 @code {
     public CustomerViewModel? CustomerViewModel { get; set; }
@@ -42,7 +42,7 @@ else
         }
         catch (Exception ex)
         {
-            ex.Message.ToString();
+            Console.WriteLine(ex.Message);
         }
     }
 }
