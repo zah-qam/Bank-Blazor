@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankBlazor.Api.Controllers
 {
     [ApiController]
-    [Route("api/customer")]
+    [Route("api/[controller]")]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService; // Ska skapa en Mapp (Interfaces) Och sätta in ICustomerService där   /klart
