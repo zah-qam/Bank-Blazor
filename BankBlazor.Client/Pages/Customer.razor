@@ -3,46 +3,66 @@
 @using Newtonsoft.Json
 @inject HttpClient HttpClient
 
+<h3>Customer</h3>
 @if (CustomerViewModel == null)
 {
     <p>Loading...</p>
 }
 else
 {
-    <section id="dashboard" class="container">
-        <h2>Custumer Dashboard</h2>
-        <div class="info">
-            <p><strong>Namn:</strong> @CustomerViewModel.GivenName @CustomerViewModel.SurName</p>
-            <p><strong>Address:</strong> @CustomerViewModel.Streetaddress</p>
-            <p><strong>Telefonnummer:</strong> @CustomerViewModel.Zipcode</p>
-            <p><strong>Postnummer:</strong> @CustomerViewModel.City</p>
-            <p><strong>E-post:</strong> @CustomerViewModel.Emailaddress</p>
-        </div>
-    </section>
+    <div class="text-center mb-5">
+        <h3>@CustomerViewModel.Givenname @CustomerViewModel.Surname</h3>
+    </div>
+
+    <div class="customer-grid">
+        @foreach (var account in CustomerViewModel.Accounts)
+        {
+            <div class="customer-card">
+                <h3>Account ID: @account.AccountId</h3>
+                <p><strong>Balance:</strong> @account.Balance.ToString("C")</p>
+                <p><strong>Frequency:</strong> @account.Frequency</p>
+                <p><strong>Created:</strong> @account.Created.ToShortDateString()</p>
+            </div>
+        }
+    </div>
 }
+
+<div class="customer-id-form">
+    <h2>Find Customer</h2>
+    <div class="input-group">
+        <input type="number" @bind="customerId" placeholder="Enter Customer ID" />
+        <button @onclick="GetCustomerInfo">Search</button>
+    </div>
+</div>
 
 
 @code {
     public CustomerViewModel? CustomerViewModel { get; set; }
+    public int customerId;
 
-    protected override async Task OnInitializedAsync()
+    private async Task GetCustomerInfo()
     {
-        var id = 1;
-        var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7249/api/Customer/{id}");
-        try
+        if (customerId > 0)
         {
-            using (var response = await HttpClient.SendAsync(request))
-            {
-                response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
-                // Deserialize the JSON response into the ProductViewModel object
-                CustomerViewModel = JsonConvert.DeserializeObject<CustomerViewModel>(body);
 
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7249/api/customer/{customerId}/accounts");
+                using (var response = await HttpClient.SendAsync(request))
+                {
+                    response.EnsureSuccessStatusCode();
+                    var json = await response.Content.ReadAsStringAsync();
+                    CustomerViewModel = JsonConvert.DeserializeObject<CustomerViewModel>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fel vid hämtning av kunddata: " + ex.Message);
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+		else
+		{
+			Console.WriteLine("Ingen kund vald.");
+		}
     }
 }

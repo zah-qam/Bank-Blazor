@@ -24,6 +24,8 @@ namespace BankBlazor.Api.Services
             var customer = await _dbContext.Customers 
                 .Include(c => c.Dispositions) // Ska jag ha med Depositions?
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
+            if (customer == null)
+                throw new Exception("Customer not found");
             return customer;
         }
         public async Task<ResponseCode> CreateCustomer(Customer customer)

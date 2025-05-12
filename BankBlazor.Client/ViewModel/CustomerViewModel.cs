@@ -2,15 +2,15 @@
 {
     public class CustomerViewModel
     {
-        public string GivenName { get; set; } = null!;
-        public string SurName { get; set; } = null!;
         public int CustomerId { get; set; }
-        public string Streetaddress { get; set; } = null!;
-        public string City { get; set; } = null!;
-        public string Zipcode { get; set; } = null!;
-        public string? Country { get; set; }
-        public string? Telephone { get; set; }
-        public string? Emailaddress { get; set; }
+        public string Givenname { get; set; }
+        public string Surname { get; set; }
+        public string Streetaddress { get; set; }
+        public string City { get; set; }
+        public string Zipcode { get; set; }
+        public string Country { get; set; }
+        public string Emailaddress { get; set; }
+        public string Telephonenumber { get; set; }
         public List<AccountViewModel> Accounts { get; set; } = new();
     }
 
@@ -19,6 +19,7 @@
         public int AccountId { get; set; }
         public decimal Balance { get; set; }
         public string? Frequency { get; set; }
+        public DateTime Created { get; set; }
     }
 
     public class TransactionViewModel

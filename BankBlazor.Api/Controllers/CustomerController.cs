@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankBlazor.Api.Controllers
 {
     [ApiController]
-    [Route("api/customer")]
+    [Route("api/[controller]")]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService; // Ska skapa en Mapp (Interfaces) Och sätta in ICustomerService där   /klart
@@ -14,6 +14,8 @@ namespace BankBlazor.Api.Controllers
         {
             _customerService = customerService;
         }
+
+
         // GET: api/CustomerController
         [HttpGet] // Detta är en GET metod som hämtar alla kunder genom att anropa GetAll metoden i ICustomerService
         public async Task<ActionResult<List<CustomerReadDTO>>> GetAll() // Ska skapa CustomerDto i en mapp (DTOs)         /klart
@@ -33,6 +35,14 @@ namespace BankBlazor.Api.Controllers
             {
                 return NotFound();
             }
+            return Ok(customer);
+        }
+
+        [HttpGet("{customerId}/accounts")]
+        public async Task<IActionResult> GetCustomerWithAccounts(int customerId)
+        {
+            var customer = await _customerService.GetCustomerWithAccountsAsync(customerId);
+            if (customer == null) return NotFound();
             return Ok(customer);
         }
 

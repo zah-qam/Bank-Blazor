@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BankBlazor.Api.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("api/account")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService; 
@@ -16,7 +16,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         // GET: api/AccountController/customer/5
-        [HttpGet("customer/{customerId}")] // Detta är en GET metod som hämtar alla konton för en specifik kund
+        [HttpGet("account/{customerId}")] // Detta är en GET metod som hämtar alla konton för en specifik kund
         public async Task<ActionResult<List<AccountReadDTO>>> GetAccountsByCustomerId(int customerId)
         {
             var accounts = await _accountService.GetAccountByCustomerId(customerId);

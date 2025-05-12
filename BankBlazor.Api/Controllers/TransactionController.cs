@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BankBlazor.Api.Controllers
 {
-    [Route("api/transaction")]
+    [Route("api/[controller]")]
     [ApiController]
     public class TransactionController : ControllerBase
     {
@@ -20,6 +20,7 @@ namespace BankBlazor.Api.Controllers
         public async Task<ActionResult<List<TransactionReadDTO>>> GetTransactionsByAccountId(int accountId)
         {
             var transactions = await _transactionService.GetByAccountId(accountId);
+            if (!transactions.Any()) return NotFound();
             return Ok(transactions);
         }
 
