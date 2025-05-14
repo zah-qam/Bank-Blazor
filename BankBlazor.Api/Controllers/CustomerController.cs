@@ -38,13 +38,7 @@ namespace BankBlazor.Api.Controllers
             return Ok(customer);
         }
 
-        [HttpGet("{customerId}/accounts")]
-        public async Task<IActionResult> GetCustomerWithAccounts(int customerId)
-        {
-            var customer = await _customerService.GetCustomerWithAccountsAsync(customerId);
-            if (customer == null) return NotFound();
-            return Ok(customer);
-        }
+        
 
     }
 }

@@ -59,12 +59,12 @@ namespace BankBlazor.Api.Services
             {
                 AccountId = dto.AccountId,
                 Amount = dto.Amount,
-                Date = DateOnly.FromDateTime(DateTime.Now), // Använder DateOnly eftersom din entity har det
+                Date = DateOnly.FromDateTime(DateTime.Now),
                 Type = dto.Type,
                 Operation = dto.Operation,
                 Balance = account.Balance,
                 Bank = dto.Bank,
-                Symbol = null, // Anpassa om du vill sätta
+                Symbol = null, // Anpassas om man vill sätta
                 Account = null // Normalt sätts detta automatiskt om navigation används
             };
 
