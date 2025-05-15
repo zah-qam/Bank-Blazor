@@ -7,8 +7,5 @@ namespace BankBlazor.Api.Services.Interfaces
     {
         Task<List<Customer>> GetAllCustomers();
         Task<Customer?> GetCustomerById(int id); // frågetecken för nullable
-        Task<ResponseCode> CreateCustomer(Customer customer);
-        Task<ResponseCode> UpdateCustomer(Customer customer);
-        Task<ResponseCode> DeleteCustomer(int id);
     }
 }

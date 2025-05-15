@@ -24,7 +24,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerReadDTO>> GetById(int id) // Detta är en GET metod som hämtar en kund 
+        public async Task<IActionResult> GetById(int id) // Detta är en GET metod som hämtar en kund 
                                                                      // Den tar emot en parameter id av typ int 
                                                                      // och hämtar en specifik kund.
         {
