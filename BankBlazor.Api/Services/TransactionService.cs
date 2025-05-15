@@ -16,11 +16,7 @@ namespace BankBlazor.Api.Services
             _dbContext = dbContext;
         }
 
-<<<<<<< HEAD
-=======
-        // En metod för att hämta alla transaktioner för ett konto
 
->>>>>>> Services
         public async Task<List<TransactionReadDTO>> GetByAccountId(int accountId)
         {
             return await _dbContext.Transactions
@@ -28,13 +24,14 @@ namespace BankBlazor.Api.Services
                 .Select(t => new TransactionReadDTO
                 {
                     TransactionId = t.TransactionId,
-                    AccountId = t.AccountId,
+                    Symbol = t.Symbol,
                     Amount = t.Amount,
                     Date = t.Date,
                     Type = t.Type,
                     Operation = t.Operation,
                     Balance = t.Balance,
                     Bank = t.Bank,
+                    Account = t.Account // vill inkludera kontonamnet
 
                 })
                 .ToListAsync();
