@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BankBlazor.Api.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("api/[account]")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService; 
