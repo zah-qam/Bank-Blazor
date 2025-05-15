@@ -1,21 +1,20 @@
 ﻿
 using BankBlazor.Api.Data;
 using BankBlazor.Api.DTOs;
+using BankBlazor.Api.Enums;
 using BankBlazor.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankBlazor.Api.Services
 {
-    public class TransactionService : ITransactionService // AccountService ansvarar då för kontodata (hämta saldon, lista konton).
-                                                          // TransactionService ansvarar för transaktionshistorik =>
-                                                          // skapa transaktioner, hämta alla transaktioner för ett konto, etc.
+    public class TransactionService : ITransactionService
     {
         private readonly BankBlazorContext _dbContext;
+
         public TransactionService(BankBlazorContext dbContext)
         {
             _dbContext = dbContext;
         }
-
 
         public async Task<List<TransactionReadDTO>> GetByAccountId(int accountId)
         {
@@ -31,8 +30,7 @@ namespace BankBlazor.Api.Services
                     Operation = t.Operation,
                     Balance = t.Balance,
                     Bank = t.Bank,
-                    Account = t.Account // vill inkludera kontonamnet
-
+                    Account = t.Account
                 })
                 .ToListAsync();
         }
@@ -43,7 +41,6 @@ namespace BankBlazor.Api.Services
             if (account == null)
                 throw new Exception("Kontot hittades inte.");
 
-            // Uppdatera saldo
             if (dto.Type == "Deposit")
                 account.Balance += dto.Amount;
             else if (dto.Type == "Withdraw")
@@ -52,17 +49,18 @@ namespace BankBlazor.Api.Services
                     throw new Exception("Otillräckligt saldo.");
                 account.Balance -= dto.Amount;
             }
+
             var transaction = new Transaction
             {
                 AccountId = dto.AccountId,
                 Amount = dto.Amount,
-                Date = DateOnly.FromDateTime(DateTime.Now), // Använder DateOnly eftersom din entity har det
+                Date = DateOnly.FromDateTime(DateTime.Now),
                 Type = dto.Type,
                 Operation = dto.Operation,
                 Balance = account.Balance,
                 Bank = dto.Bank,
-                Symbol = null, // Anpassa om du vill sätta
-                Account = null // Normalt sätts detta automatiskt om navigation används
+                Symbol = null,
+                Account = null
             };
 
             _dbContext.Transactions.Add(transaction);
@@ -81,5 +79,104 @@ namespace BankBlazor.Api.Services
             };
         }
 
+        public async Task<ResponseCode> Transfer(int fromAccountId, int toAccountId, decimal amount)
+        {
+            var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId);
+            var toAccount = await _dbContext.Accounts.FindAsync(toAccountId);
+
+            if (fromAccount == null || toAccount == null)
+                return ResponseCode.NotFound;
+
+            if (fromAccount.Balance < amount)
+                return ResponseCode.InsufficientFunds;
+
+            fromAccount.Balance -= amount;
+            toAccount.Balance += amount;
+
+            var withdrawal = new Transaction
+            {
+                AccountId = fromAccount.AccountId,
+                Date = DateOnly.FromDateTime(DateTime.Today),
+                Type = "Debit",
+                Operation = "Transfer Out",
+                Amount = -amount,
+                Balance = fromAccount.Balance,
+                Symbol = null,
+                Bank = "BankBlazor",
+                Account = null
+            };
+
+            var deposit = new Transaction
+            {
+                AccountId = toAccount.AccountId,
+                Date = DateOnly.FromDateTime(DateTime.Today),
+                Type = "Credit",
+                Operation = "Transfer In",
+                Amount = amount,
+                Balance = toAccount.Balance,
+                Symbol = null,
+                Bank = "BankBlazor",
+                Account = null
+            };
+
+            _dbContext.Transactions.Add(withdrawal);
+            _dbContext.Transactions.Add(deposit);
+
+            await _dbContext.SaveChangesAsync();
+            return ResponseCode.Accepted;
+        }
+
+        public async Task<ResponseCode> Deposit(int accountId, decimal amount)
+        {
+            var account = await _dbContext.Accounts.FindAsync(accountId);
+            if (account == null) return ResponseCode.NotFound;
+
+            account.Balance += amount;
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Type = "Credit",
+                Operation = "Deposit",
+                Amount = amount,
+                Balance = account.Balance,
+                Bank = "BankBlazor",
+                Symbol = null,
+                Account = null
+            };
+
+            _dbContext.Transactions.Add(transaction);
+            await _dbContext.SaveChangesAsync();
+            return ResponseCode.Accepted;
+        }
+
+        public async Task<ResponseCode> Withdraw(int accountId, decimal amount)
+        {
+            var account = await _dbContext.Accounts.FindAsync(accountId);
+            if (account == null) return ResponseCode.NotFound;
+            if (account.Balance < amount) return ResponseCode.InsufficientFunds;
+
+            account.Balance -= amount;
+
+            var transaction = new Transaction
+            {
+                AccountId = accountId,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Type = "Withdraw",
+                Operation = "Uttag",
+                Amount = amount,
+                Balance = account.Balance,
+                Bank = "BankBlazor",
+                Symbol = null,
+                Account = null
+            };
+
+            _dbContext.Transactions.Add(transaction);
+            await _dbContext.SaveChangesAsync();
+            return ResponseCode.Accepted;
+        }
     }
+
 }
+

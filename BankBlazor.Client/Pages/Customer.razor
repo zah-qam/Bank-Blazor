@@ -1,5 +1,39 @@
-﻿<h3>Kundöversikt</h3>
+﻿@page "/customer"
+@using Newtonsoft.Json
+@using BankBlazor.Client.ViewModel
+@inject HttpClient HttpClient
+
+<h3>Kundöversikt</h3>
+
 
 @code {
+	public CustomerReadViewModel? CustomerReadViewModel { get; set; }
+	public int customerId;
 
+	private async Task GetCustomer()
+	{
+		if (customerId > 0)
+		{
+			try
+			{
+				var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7249/api/customer/{customerId}/accounts");
+				using (var response = await HttpClient.SendAsync(request))
+				{
+					response.EnsureSuccessStatusCode();
+					var body = await response.Content.ReadAsStringAsync();
+					CustomerReadViewModel = JsonConvert.DeserializeObject<CustomerReadViewModel>(body);
+				}
+			}
+			catch (Exception ex)
+			{
+				ex.Message.ToString();
+			}
+				}
+
+		}
+
+		
+	}
+
+	
 }
