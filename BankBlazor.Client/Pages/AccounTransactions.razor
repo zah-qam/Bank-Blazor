@@ -65,10 +65,15 @@
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<TransactionViewModel>(json);
+            var result = JsonConvert.DeserializeObject<List<TransactionViewModel>>(json);
 
             if (result != null)
             {
+				Transactions = result;
+			}
+			else
+			{
+				Transactions = new List<TransactionViewModel>();
 				
             }
         }
