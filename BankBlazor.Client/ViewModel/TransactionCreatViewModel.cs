@@ -1,9 +1,8 @@
-﻿namespace BankBlazor.Api.DTOs
+﻿namespace BankBlazor.Client.ViewModel
 {
-    public class TransferDTO
+    public class TransactionCreatViewModel
     {
-        public int FromAccountId { get; set; }
-        public int ToAccountId { get; set; }
+        public int AccountId { get; set; }
         public decimal Amount { get; set; }
         public string? Symbol { get; set; }
         public string? Bank { get; set; }

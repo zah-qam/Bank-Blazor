@@ -10,7 +10,9 @@
         public string Operation { get; set; } = string.Empty; // Valfri textbeskrivning för överföringar
         public decimal Balance { get; set; } // Saldo efter transaktionen
         public string? Bank { get; set; } // Kontot som pengarna överförs till (om det är en överföring)
-        
-        
+        public string? Account { get; set; } // Kontonamnet (om det är en överföring)
+        public string? Symbol { get; set; }
+
+
     }
 }
