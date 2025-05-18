@@ -1,0 +1,78 @@
+﻿@page "/accounts/{accountId:int}/transactions"
+@inject HttpClient http
+@using BankBlazor.Client.ViewModel
+@using Newtonsoft.Json
+
+<div class="list-container">
+    <h2 class="list-title">Transactions for account @accountId</h2>
+
+    @if (isLoading)
+    {
+        <div class="text-center"><div class="spinner-border"></div><p>Loading transactions...</p></div>
+    }
+    else if (!Transactions.Any())
+    {
+        <p>No transactions found.</p>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Operation</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Transactions)
+                {
+                    <tr>
+                        <td>@t.Date.ToShortDateString()</td>
+                        <td>@t.Type</td>
+                        <td>@t.Operation</td>
+                        <td>@t.Amount.ToString("C")</td>
+                        <td>@t.Balance.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+</div>
+
+@code {
+    [Parameter] public int accountId { get; set; }
+
+    private List<TransactionViewModel> Transactions = new();
+    
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTransactions();
+    }
+
+    private async Task LoadTransactions()
+    {
+        isLoading = true;
+
+        var response = await http.GetAsync(
+            $"https://localhost:7249/api/transaction/account/{accountId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<TransactionViewModel>(json);
+
+            if (result != null)
+            {
+				
+            }
+        }
+
+        isLoading = false;
+    }
+}

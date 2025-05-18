@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BankBlazor.Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customerService; // Ska skapa en Mapp (Interfaces) Och sätta in ICustomerService där   /klart
@@ -24,7 +24,7 @@ namespace BankBlazor.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerReadDTO>> GetById(int id) // Detta är en GET metod som hämtar en kund 
+        public async Task<IActionResult> GetById(int id) // Detta är en GET metod som hämtar en kund 
                                                                      // Den tar emot en parameter id av typ int 
                                                                      // och hämtar en specifik kund.
         {
