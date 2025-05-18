@@ -4,6 +4,7 @@ using BankBlazor.Api.Services;
 using BankBlazor.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace BankBlazor.Api.Controllers
 {
@@ -22,6 +23,7 @@ namespace BankBlazor.Api.Controllers
         public async Task<ActionResult<List<TransactionReadDTO>>> GetTransactionsByAccountId(int accountId)
         {
             var transactions = await _transactionService.GetByAccountId(accountId);
+            if (!transactions.Any()) return NotFound("Inga transaktioner hittades för det angivna kontot.");
             return Ok(transactions);
         }
 
@@ -38,30 +40,45 @@ namespace BankBlazor.Api.Controllers
         [HttpPost("transfer")]
         public async Task<ActionResult> Transfer([FromBody] TransferDTO dto)
         {
-            var result = await _transactionService.Transfer(dto.FromAccountId, dto.ToAccountId, dto.Amount);
-            return result == ResponseCode.Success ? Ok("Överföringen gick genom utmärkt.") :
-                   result == ResponseCode.NotFound ? NotFound("Någon/ingen av konton hittades inte.") :
-                   BadRequest("Ej tillräckligt med saldo.");
+            try
+            {
+                await _transactionService.Transfer(dto);
+                return Ok("Överföringen gick genom utmärkt.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Överföringen misslyckades: {ex.Message}");
+            }
         }
 
         // POST: api/AccountController/withdraw
         [HttpPost("withdraw")]
-        public async Task<ActionResult> Withdraw([FromBody] TransactionCreateDTO dto)
+        public async Task<ActionResult> Withdraw(TransactionCreateDTO dto)
         {
-            var result = await _transactionService.Withdraw(dto.AccountId, dto.Amount);
-            return result == ResponseCode.Success ? Ok("Transaktionen gick genom.") :
-                   result == ResponseCode.NotFound ? NotFound("Kontot hittades ej.") :
-                   BadRequest("Ej tillräckligt med saldo!");
+            try
+            {
+                var result = await _transactionService.Withdraw(dto);
+                return CreatedAtAction(nameof(GetTransactionsByAccountId), new { accountId = dto.AccountId }, result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Uttaget misslyckades: {ex.Message}");
+            }
         }
 
         // Post: api/AccountController/deposit
         [HttpPost("deposit")]
-        public async Task<ActionResult> Deposit([FromBody] TransactionCreateDTO dto)
+        public async Task<ActionResult<TransactionReadDTO>> Deposit(TransactionCreateDTO dto)
         {
-            var result = await _transactionService.Deposit(dto.AccountId, dto.Amount);
-            return result == ResponseCode.Success ? Ok("Överföringen gick genom utmärkt.") :
-                   result == ResponseCode.NotFound ? NotFound("Någon/ ingen av kontona hittades inte.") :
-                   BadRequest("Oväntat fel inträffade.");
+            try
+            {
+                var result = await _transactionService.Deposit(dto);
+                return CreatedAtAction(nameof(GetTransactionsByAccountId), new { accountId = dto.AccountId }, result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Insättningen misslyckades: {ex.Message}");
+            }
         }
     }
 }
