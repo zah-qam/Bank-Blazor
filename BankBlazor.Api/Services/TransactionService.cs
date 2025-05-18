@@ -35,33 +35,48 @@ namespace BankBlazor.Api.Services
                 .ToListAsync();
         }
 
+        public async Task<TransactionReadDTO> GetTransactionById(int transactionId)
+        {
+            var transaction = await _dbContext.Transactions
+                .Where(t => t.TransactionId == transactionId)
+                .Select(t => new TransactionReadDTO
+                {
+                    TransactionId = t.TransactionId,
+                    Date = t.Date,
+                    Type = t.Type,
+                    Operation = t.Operation,
+                    Amount = t.Amount,
+                    Balance = t.Balance,
+                    Symbol = t.Symbol,
+                    Bank = t.Bank,
+                    Account = t.Account
+                })
+                .FirstOrDefaultAsync();
+
+            return transaction;
+        }
+
         public async Task<TransactionReadDTO> CreateAsync(TransactionCreateDTO dto)
         {
             var account = await _dbContext.Accounts.FindAsync(dto.AccountId);
             if (account == null)
                 throw new Exception("Kontot hittades inte.");
 
-            if (dto.Type == "Deposit")
-                account.Balance += dto.Amount;
-            else if (dto.Type == "Withdraw")
-            {
-                if (account.Balance < dto.Amount)
-                    throw new Exception("Otillräckligt saldo.");
-                account.Balance -= dto.Amount;
-            }
+            var newBalance = account.Balance + dto.Amount;
 
             var transaction = new Transaction
             {
                 AccountId = dto.AccountId,
                 Amount = dto.Amount,
-                Date = DateOnly.FromDateTime(DateTime.Now),
-                Type = dto.Type,
-                Operation = dto.Operation,
+                Date = dto.Date,
+                Type = "Credit", 
+                Operation = "Deposit", 
                 Balance = account.Balance,
                 Bank = dto.Bank,
-                Symbol = null,
-                Account = null
+                Symbol = dto.Symbol,
+                Account = dto.Account
             };
+            account.Balance = newBalance;
 
             _dbContext.Transactions.Add(transaction);
             await _dbContext.SaveChangesAsync();
@@ -75,23 +90,25 @@ namespace BankBlazor.Api.Services
                 Type = transaction.Type,
                 Operation = transaction.Operation,
                 Balance = transaction.Balance,
-                Bank = transaction.Bank
+                Bank = transaction.Bank,
+                Symbol = transaction.Symbol,
+                Account = transaction.Account
             };
         }
 
-        public async Task<ResponseCode> Transfer(int fromAccountId, int toAccountId, decimal amount)
+        public async Task Transfer(TransferDTO transferDto)
         {
-            var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId);
-            var toAccount = await _dbContext.Accounts.FindAsync(toAccountId);
+            var fromAccount = await _dbContext.Accounts.FindAsync(transferDto.FromAccountId);
+            var toAccount = await _dbContext.Accounts.FindAsync(transferDto.ToAccountId);
 
             if (fromAccount == null || toAccount == null)
-                return ResponseCode.NotFound;
+                throw new Exception("Något av kontona hittades inte.");
 
-            if (fromAccount.Balance < amount)
-                return ResponseCode.InsufficientFunds;
+            if (fromAccount.Balance < transferDto.Amount)
+                throw new Exception("Ej tillräckligt med saldo.");
 
-            fromAccount.Balance -= amount;
-            toAccount.Balance += amount;
+            fromAccount.Balance -= transferDto.Amount;
+            toAccount.Balance += transferDto.Amount;
 
             var withdrawal = new Transaction
             {
@@ -99,11 +116,11 @@ namespace BankBlazor.Api.Services
                 Date = DateOnly.FromDateTime(DateTime.Today),
                 Type = "Debit",
                 Operation = "Transfer Out",
-                Amount = -amount,
+                Amount = -transferDto.Amount,
                 Balance = fromAccount.Balance,
-                Symbol = null,
-                Bank = "BankBlazor",
-                Account = null
+                Symbol = transferDto.Symbol,
+                Bank = transferDto.Bank,
+                Account = transferDto.Account
             };
 
             var deposit = new Transaction
