@@ -1,5 +1,5 @@
 ﻿using BankBlazor.Api.Data;
-using BankBlazor.Api.DTOs;
+using BankBlazor.Shared.DTOs;
 using BankBlazor.Api.Enums;
 
 namespace BankBlazor.Api.Services.Interfaces

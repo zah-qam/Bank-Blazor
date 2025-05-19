@@ -1,4 +1,4 @@
-﻿using BankBlazor.Api.DTOs;
+﻿using BankBlazor.Shared.DTOs;
 using BankBlazor.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
