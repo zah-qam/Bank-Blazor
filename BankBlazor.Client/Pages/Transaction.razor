@@ -1,0 +1,70 @@
+﻿@page "/transactions/{accountId:int}"
+
+@using Newtonsoft.Json
+@using BankBlazor.Client.ViewModel
+@inject HttpClient HttpClient
+
+<h3>Transaktioner för konto @accountId</h3>
+
+@if (Transactions == null)
+{
+    <div class="text-center"><div class="spinner-border"></div><p>Laddar transaktioner...</p></div>
+}
+else if (Transactions.Count == 0)
+{
+    <p>Inga transaktioner hittades.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Typ</th>
+                <th>Belopp</th>
+                <th>Saldo efter</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Transactions)
+            {
+                <tr>
+                    <td>@t.Date.ToShortDateString()</td>
+                    <td>@t.AccountId</td>
+                    <td>@t.Type</td>
+                    <td>@t.Operation</td>
+                    <td>@t.Amount.ToString("C")</td>
+                    <td>@t.Balance.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public int accountId { get; set; }
+
+    public List<TransactionViewModel> Transactions { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTransactions();
+    }
+
+    private async Task LoadTransactions()
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync($"https://localhost:7155/api/Transaction/account/{accountId}");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            Transactions = JsonConvert.DeserializeObject<List<TransactionViewModel>>(json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fel vid hämtning av transaktioner: {ex.Message}");
+        }
+    }
+}
+
