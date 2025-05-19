@@ -1,4 +1,4 @@
-﻿namespace BankBlazor.Api.DTOs
+﻿namespace BankBlazor.Shared.DTOs
 {
     public class AccountCreatDTO //Detta är det som kommer in i API:et, som användaren fyller i ett
                                  //formulär, och som vi ska använda för att skapa en ny kund.

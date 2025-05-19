@@ -1,4 +1,4 @@
-﻿namespace BankBlazor.Api.DTOs
+﻿namespace BankBlazor.Shared.DTOs
 {
     public class AccountReadDTO // Det som kommer tillbaka till klienten, och som klienten kan se,
                                 // som kommer att visas i UI.
