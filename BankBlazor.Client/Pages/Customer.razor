@@ -1,41 +1,95 @@
-﻿@page "/customer"
+﻿@page "/customer/{customerId:int}"
+
 @using Newtonsoft.Json
 @using BankBlazor.Client.ViewModel
 @inject HttpClient HttpClient
+@inject NavigationManager Navigation
 
-<h3>Kundöversikt</h3>
+<h3>  En kund</h3>
+<div class="list-container">
+    <h2 class="list-title">  Kund med Id: @customerId</h2>
+    @if (CustomerViewModel == null)
+    {
+        <div class="text-center"><div class="spinner-border"></div><p>Laddar kund...</p></div>
+    }
+    else
+    {
+        <p><strong>  First Name:</strong> @CustomerViewModel.Givenname</p>
+        <p><strong>  Last Name:</strong> @CustomerViewModel.Surname</p>
+        <p><strong>  Email:</strong> @CustomerViewModel.Emailaddress</p>
+        <p><strong>  Address:</strong> @CustomerViewModel.Streetaddress</p>
+        <p><strong>  City:</strong> @CustomerViewModel.City</p>
+    }
 
-<li><NavLink href="/transactions">Transactions</NavLink></li>
+    <h4 class="text-center">  Kundens konton</h4>
+    <div class="customer">
+        @if (Accounts != null)
+        {
+            @foreach (var account in Accounts)
+            {
+                <div class="customer-card">
+                    <h3>Account ID: @account.AccountId</h3>
+                    <p><strong>Balance:</strong> @account.Balance.ToString("C")</p>
+                    <p><strong>Frequency:</strong> @account.Frequency</p>
+                    <p><strong>Created:</strong> @account.Created.ToShortDateString()</p>
+
+                    <NavLink class="btn btn-primary"
+                    href="@($"/accounts/{account.AccountId}/transactions")">
+                        Visa transaktioner
+                    </NavLink>
+
+                </div>
+            }
+        }
+
+    </div>
+    
+
+</div>
+
+
 
 
 @code {
-	public CustomerReadViewModel? CustomerReadViewModel { get; set; }
-	public int customerId;
+    [Parameter]
+    public int customerId { get; set; }
 
-	private async Task GetCustomer()
-	{
-		if (customerId > 0)
-		{
-			try
-			{
-				var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7249/api/customer/{customerId}/accounts");
-				using (var response = await HttpClient.SendAsync(request))
-				{
-					response.EnsureSuccessStatusCode();
-					var body = await response.Content.ReadAsStringAsync();
-					CustomerReadViewModel = JsonConvert.DeserializeObject<CustomerReadViewModel>(body);
-				}
-			}
-			catch (Exception ex)
-			{
-				ex.Message.ToString();
-			}
-		}
+    public CustomerViewModel? CustomerViewModel { get; set; }
+    public List<AccountViewModel>? Accounts { get; set; }
 
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCustomer();
+        await GetAccounts();
+    }
 
-		
-}
+    private async Task GetCustomer()
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync($"https://localhost:7155/api/customer/{customerId}");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            CustomerViewModel = JsonConvert.DeserializeObject<CustomerViewModel>(json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Kundfel: {ex.Message}");
+        }
+    }
 
-	
+    private async Task GetAccounts()
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync($"https://localhost:7155/api/account/account/{customerId}");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            Accounts = JsonConvert.DeserializeObject<List<AccountViewModel>>(json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Kontofel: {ex.Message}");
+        }
+    }
 }
