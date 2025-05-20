@@ -32,11 +32,11 @@
                     <p><strong>Balance:</strong> @account.Balance.ToString("C")</p>
                     <p><strong>Frequency:</strong> @account.Frequency</p>
                     <p><strong>Created:</strong> @account.Created.ToShortDateString()</p>
-
+@* 
                     <NavLink class="btn btn-primary"
                              href="@($"transactions/{account.AccountId}")">
                         Visa transaktioner
-                    </NavLink>
+                    </NavLink> *@
 
                     <div class="mt-2">
                         <NavLink class="btn btn-primary" href="@($"/transactions/deposit/{account.AccountId}")">Insättning</NavLink>
