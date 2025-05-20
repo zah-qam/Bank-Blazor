@@ -1,4 +1,4 @@
-﻿@page "/transactions/{accountId:int}"
+﻿@page "/transactions"
 
 @using Newtonsoft.Json
 @using BankBlazor.Client.ViewModel
@@ -42,8 +42,7 @@ else
 }
 
 @code {
-    [Parameter]
-    public int accountId { get; set; }
+    public int accountId = 1;
 
     public List<TransactionViewModel> Transactions { get; set; }
 
