@@ -25,6 +25,10 @@ namespace BankBlazor.Api.Services
             var customer = await _dbContext.Customers 
                 //.Include(c => c.Dispositions) // Ska jag ha med Depositions?
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
+            if (customer == null)
+            {
+                throw new KeyNotFoundException($"Kund med id {id} hittades inte.");
+            }
             return new CustomerReadDTO {
                 City = customer.City,
                 Country = customer.Country,
