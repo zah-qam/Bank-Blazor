@@ -1,8 +1,61 @@
-﻿@page "/transactions/deposit/{accountId}"
+﻿@page "/transactions/deposit/{accountId:int}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
 
+<h3>Insättning</h3>
 
-<h3>Deposit</h3>
+<div class="card p-4">
+    <p><strong>Konto-ID:</strong> @accountId</p>
+
+    <div class="mb-3">
+        <label for="amount" class="form-label">Belopp</label>
+        <input type="number" class="form-control" id="amount" @bind="amount" />
+    </div>
+
+    <button class="btn btn-success" @onclick="MakeDeposit">Bekräfta insättning</button>
+
+    @if (!string.IsNullOrEmpty(Message))
+    {
+        <div class="alert alert-info mt-3">@Message</div>
+    }
+</div>
 
 @code {
+    [Parameter]
+    public int accountId { get; set; }
+
+    private decimal amount;
+    private string? Message;
+
+    private async Task MakeDeposit()
+    {
+        var payload = new
+        {
+            AccountId = accountId,
+            Amount = amount
+        };
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("https://localhost:7155/api/Transaction/deposit", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Message = "Insättning genomförd!";
+                StateHasChanged();
+                await Task.Delay(3000);
+                Navigation.NavigateTo($"/customer/1");
+            }
+            else
+            {
+                Message = "Något gick fel. Försök igen.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fel: {ex.Message}";
+        }
+    }
 
 }
+
