@@ -78,6 +78,10 @@ Why: this repo has 3 moving parts (Blazor UI, Web API, SQL Server). Docker Compo
    - Copy `.env.example` to `.env`
    - Set `SA_PASSWORD` to a strong password
 
+   Notes:
+   - `.env` is ignored by git, so each developer sets their own local `SA_PASSWORD` once and keeps it on their machine.
+   - SQL Server enforces password complexity for `SA_PASSWORD` (generally: at least 8 chars, and include upper/lowercase, a number, and a symbol).
+
 3. Start everything:
 
    docker compose up --build
@@ -89,6 +93,10 @@ Why: this repo has 3 moving parts (Blazor UI, Web API, SQL Server). Docker Compo
 Notes:
 - The web container serves the Blazor static files and reverse-proxies `/api/*` to the API container, so the client uses relative `/api/...` URLs (no hardcoded localhost ports).
 - SQL Server runs in a container and stores its data in a named Docker volume (`mssql-data`).
+ - If you change `SA_PASSWORD` after the database volume has been created, you may need to recreate the volume:
+
+    docker compose down -v
+    docker compose up --build
    
 -Implementation Notes
 
