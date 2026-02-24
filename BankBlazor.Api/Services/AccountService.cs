@@ -25,6 +25,7 @@ namespace BankBlazor.Api.Services
                     AccountId = d.Account.AccountId, // d.Accoun.AccountId är id:t på kontot
                     Balance = d.Account.Balance, // d.Account.Balance är saldot på kontot
                     Frequency = d.Account.Frequency, // d.Account.Frequency är frekvensen på kontot
+                       Created = d.Account.Created
                 })
                 .ToListAsync();
             return accounts;

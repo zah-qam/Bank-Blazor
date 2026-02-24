@@ -3,7 +3,7 @@
 @inject NavigationManager Navigation
 
 <h3>Överföring</h3>
-
+            var response = await Http.PostAsJsonAsync("api/transaction/transfer", payload);
 <div class="card p-4">
     <p><strong>Från konto:</strong> @accountId</p>
 
@@ -44,7 +44,7 @@
 
         try
         {
-            var response = await Http.PostAsJsonAsync("https://localhost:7155/api/Transaction/transfer", payload);
+            var response = await Http.PostAsJsonAsync("api/transaction/transfer", payload);
 
             if (response.IsSuccessStatusCode)
             {

@@ -1,0 +1,33 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?SA_PASSWORD must be set (e.g. via .env)}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: BankBlazor.Api/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Docker
+      ConnectionStrings__DefaultConnection: Server=tcp:db,1433;Database=BankBlazor;User Id=sa;Password=${SA_PASSWORD:?SA_PASSWORD must be set (e.g. via .env)};TrustServerCertificate=true;Encrypt=false;Connect Timeout=60;Command Timeout=180
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: .
+      dockerfile: BankBlazor.Client/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  mssql-data:

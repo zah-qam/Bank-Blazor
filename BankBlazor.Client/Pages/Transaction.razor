@@ -20,7 +20,6 @@ else
         <thead>
             <tr>
                 <th>Datum</th>
-                <th>Typ</th>
                 <th>Belopp</th>
                 <th>Saldo efter</th>
             </tr>
@@ -44,7 +43,7 @@ else
 @code {
     public int accountId = 1;
 
-    public List<TransactionViewModel> Transactions { get; set; }
+    public List<TransactionViewModel>? Transactions { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,10 +54,10 @@ else
     {
         try
         {
-            var response = await HttpClient.GetAsync($"https://localhost:7155/api/Transaction/account/{accountId}");
+            var response = await HttpClient.GetAsync($"api/transaction/account/{accountId}");
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
-            Transactions = JsonConvert.DeserializeObject<List<TransactionViewModel>>(json);
+            Transactions = JsonConvert.DeserializeObject<List<TransactionViewModel>>(json) ?? new List<TransactionViewModel>();
         }
         catch (Exception ex)
         {

@@ -30,15 +30,15 @@ namespace BankBlazor.Api.Services
                 throw new KeyNotFoundException($"Kund med id {id} hittades inte.");
             }
             return new CustomerReadDTO {
-                City = customer.City,
-                Country = customer.Country,
+                City = customer.City ?? string.Empty,
+                Country = customer.Country ?? string.Empty,
                 CustomerId = customer.CustomerId,
-                Emailaddress = customer.Emailaddress,
-                Givenname = customer.Givenname,
-                Streetaddress = customer.Streetaddress,
-                Surname = customer.Surname,
+                Emailaddress = customer.Emailaddress ?? string.Empty,
+                Givenname = customer.Givenname ?? string.Empty,
+                Streetaddress = customer.Streetaddress ?? string.Empty,
+                Surname = customer.Surname ?? string.Empty,
                 Telephonenumber = customer.Telephonenumber,
-                Zipcode = customer.Zipcode
+                Zipcode = customer.Zipcode ?? string.Empty
             };
         }
        

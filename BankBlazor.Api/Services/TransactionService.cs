@@ -23,6 +23,7 @@ namespace BankBlazor.Api.Services
                 .Select(t => new TransactionReadDTO
                 {
                     TransactionId = t.TransactionId,
+                    AccountId = t.AccountId,
                     Symbol = t.Symbol,
                     Amount = t.Amount,
                     Date = t.Date,
@@ -35,13 +36,14 @@ namespace BankBlazor.Api.Services
                 .ToListAsync();
         }
 
-        public async Task<TransactionReadDTO> GetTransactionById(int transactionId)
+        public async Task<TransactionReadDTO?> GetTransactionById(int transactionId)
         {
             var transaction = await _dbContext.Transactions
                 .Where(t => t.TransactionId == transactionId)
                 .Select(t => new TransactionReadDTO
                 {
                     TransactionId = t.TransactionId,
+                    AccountId = t.AccountId,
                     Date = t.Date,
                     Type = t.Type,
                     Operation = t.Operation,

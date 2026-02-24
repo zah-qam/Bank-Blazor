@@ -60,7 +60,7 @@
         isLoading = true;
 
         var response = await http.GetAsync(
-            $"https://localhost:7249/api/transaction/account/{accountId}");
+            $"api/transaction/account/{accountId}");
 
         if (response.IsSuccessStatusCode)
         {

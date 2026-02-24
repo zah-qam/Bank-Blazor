@@ -66,6 +66,29 @@ Features
 4. Navigate to the customer page:
    
    https://localhost:7249/customer/1
+
+## Run with Docker (VS Code / terminal)
+
+Why: this repo has 3 moving parts (Blazor UI, Web API, SQL Server). Docker Compose starts them together and wires networking so the client can call the API and the API can reach the database.
+
+1. Install Docker Desktop (Windows) and make sure it’s running.
+
+2. From the repo root, create a `.env` file (this keeps secrets out of source control):
+
+   - Copy `.env.example` to `.env`
+   - Set `SA_PASSWORD` to a strong password
+
+3. Start everything:
+
+   docker compose up --build
+
+4. Open the app:
+
+   http://localhost:8080/customer/1
+
+Notes:
+- The web container serves the Blazor static files and reverse-proxies `/api/*` to the API container, so the client uses relative `/api/...` URLs (no hardcoded localhost ports).
+- SQL Server runs in a container and stores its data in a named Docker volume (`mssql-data`).
    
 -Implementation Notes
 

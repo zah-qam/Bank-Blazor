@@ -74,7 +74,7 @@
     {
         try
         {
-            var response = await HttpClient.GetAsync($"https://localhost:7155/api/customer/{customerId}");
+            var response = await HttpClient.GetAsync($"api/customer/{customerId}");
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             CustomerViewModel = JsonConvert.DeserializeObject<CustomerViewModel>(json);
@@ -89,7 +89,7 @@
     {
         try
         {
-            var response = await HttpClient.GetAsync($"https://localhost:7155/api/account/account/{customerId}");
+            var response = await HttpClient.GetAsync($"api/account/account/{customerId}");
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             Accounts = JsonConvert.DeserializeObject<List<AccountViewModel>>(json);

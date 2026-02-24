@@ -3,7 +3,7 @@
     public class AccountViewModel
     {
         public int AccountId { get; set; }
-        public string Frequency { get; set; }
+        public string Frequency { get; set; } = string.Empty;
         public decimal Balance { get; set; }
         public DateTime Created { get; set; }
     }
